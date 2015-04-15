@@ -34,3 +34,4 @@ tmp/
 .ssh/
 .yjp/
 .RubyMine70/
+.viminfo
