@@ -1,0 +1,4 @@
+--ignore-dir=log
+--ignore-dir=plublic/assets
+--ignore-dir=.git
+--ignore-dir=tmp

@@ -1,0 +1,21 @@
+#!/bin/bash
+
+while (( "$#" )); do
+  case $1 in
+    "server")
+      rails server Puma -b 0.0.0.0 -p 3000 -e development
+      ;;
+    "console")
+      rails console
+      ;;
+    "test")
+      rake test
+      ;;
+    *)
+      echo "Please choose something to do."
+      ;;
+  esac
+
+  shift
+done
+
