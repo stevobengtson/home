@@ -35,3 +35,5 @@ tmp/
 .yjp/
 .RubyMine70/
 .viminfo
+.bash_history
+

@@ -1,21 +1,21 @@
 #!/bin/bash
 
-while (( "$#" )); do
-  case $1 in
-    "server")
-      rails server Puma -b 0.0.0.0 -p 3000 -e development
-      ;;
-    "console")
-      rails console
-      ;;
-    "test")
-      rake test
-      ;;
-    *)
-      echo "Please choose something to do."
-      ;;
-  esac
-
-  shift
-done
+case $1 in
+  "server")
+    rails server Puma -b 0.0.0.0 -p 3000 -e development
+    ;;
+  "console")
+    rails console
+    ;;
+  "test")
+    TEST_FILE="test/**/*_test.rb"
+    TEST_NAME=""
+    [[ -n "$2" ]] || TEST_FILE=$2
+    [[ -n "$3" ]] || TEST_NAME=$3
+    ruby -I"lib:test" $TEST_FILE $TEST_NAME
+    ;;
+  *)
+    echo "Please choose something to do."
+    ;;
+esac
 
