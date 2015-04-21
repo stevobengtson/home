@@ -1,6 +1,6 @@
 
 GIT_PROMPT_THEME=Custom
-GIT_PROMPT_FETCH_REMOTE_STATUS=0
+GIT_PROMPT_FETCH_REMOTE_STATUS=1
 source "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh"
 
 # Load the shell dotfiles, and then some:
