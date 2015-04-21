@@ -1,0 +1,3 @@
+#!/bin/bash --login
+cd ~/projects/ralhpie
+rvm gemset use ralphie

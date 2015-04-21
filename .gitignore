@@ -36,4 +36,11 @@ tmp/
 .RubyMine70/
 .viminfo
 .bash_history
-
+.composer/
+.pgpass
+.psql_history
+.vagrant.d/
+Sites/
+go/
+pgadmin.log
+v/

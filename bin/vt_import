@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# USAGE:   (ensure this file is chmod'd:  chmod 777 db-import
+# > ./db-import 'https://ey-backup-*.s3.amazonaws.com/*.varsitytutors/varsitytutors.YYYY-MM-DDTHH-MM-SS.sql.gz?...'
+
+# NOTE: the quotes around the url are required.
+
+REMOVE_TMP=1
+DB_DUMP='tmp_vt_db_download.gz'
+SCHEMA_NAME="varsity_development"
+PROGRESS_SCHEMA_NAME="vt_import_in_progress"
+
+if [ ! -z "$1" ]
+then
+    if [[ "$1" == "https://ey-backup"* ]]
+    then
+        wget -O "${DB_DUMP}" "$1"
+    else
+        DB_DUMP="$1"
+        REMOVE_TMP=0
+    fi
+else
+    echo "Please specify either an engine yard backup link or a filename."
+    exit 1
+fi
+
+# drop and then create schema vt_import_in_progress
+echo "Create db ${PROGRESS_SCHEMA_NAME}"
+if mysql -uroot -e "DROP SCHEMA IF EXISTS \`${PROGRESS_SCHEMA_NAME}\`; CREATE SCHEMA \`${PROGRESS_SCHEMA_NAME}\`"; then
+    echo "${PROGRESS_SCHEMA_NAME} schema created"
+else
+    echo "Unable to create ${PROGRESS_SCHEMA_NAME} schema"
+    exit 1
+fi
+
+# import db using the vt_import_in_progres database
+echo "importing ${DB_DUMP} into ${PROGRESS_SCHEMA_NAME}..."
+
+FILENAME=$(basename "${DB_DUMP}")
+EXT="${FILENAME##*.}"
+
+if [ "$EXT" == "gz" ]; then
+    COMMAND="pv \"${DB_DUMP}\" | gzip -dc | mysql -uroot ${PROGRESS_SCHEMA_NAME}"
+else
+    COMMAND="pv \"${DB_DUMP}\" | mysql -uroot ${PROGRESS_SCHEMA_NAME}"
+fi
+
+if eval ${COMMAND}; then
+    if [ ${REMOVE_TMP} -eq 1 ]
+    then
+        rm ${DB_DUMP}
+    fi
+else
+    echo "Unable to import ${DB_DUMP} into ${PROGRESS_SCHEMA_NAME}"
+    exit 1
+fi
+
+# create a new db to back up the current vt dev
+TIME_STAMP=`eval date +"%Y_%m_%d_%I%M%p"`
+BACKUP_SCHEMA="${SCHEMA_NAME}_${TIME_STAMP}"
+echo "Create backup schema ${BACKUP_SCHEMA}"
+if mysql -uroot -e "CREATE SCHEMA \`${BACKUP_SCHEMA}\`"; then
+    echo "backup schema created ${BACKUP_SCHEMA}"
+else
+    echo "Unable to create backup schema ${BACKUP_SCHEMA}"
+    exit 1
+fi
+
+echo "move current ${SCHEMA_NAME} to $BACKUP_SCHEMA"
+if mysql -uroot -N -s -r -e "SET SESSION group_concat_max_len = 4294967295; SELECT CONCAT('RENAME TABLE ', GROUP_CONCAT( table_schema,'.',table_name, ' TO ','${BACKUP_SCHEMA}.',table_name,' '),';') as stmt FROM information_schema.TABLES WHERE table_schema LIKE '${SCHEMA_NAME}' GROUP BY table_schema" | mysql -uroot ${SCHEMA_NAME}; then
+    echo "Backed up ${SCHEMA_NAME} to ${BACKUP_SCHEMA}"
+else
+    echo "Unable to back up ${SCHEMA_NAME} to ${BACKUP_SCHEMA}"
+    exit 1
+fi
+
+echo "Drop ${SCHEMA_NAME} schema"
+if mysql -uroot -e "DROP SCHEMA IF EXISTS \`${SCHEMA_NAME}\`;"; then
+    echo "Dropped ${SCHEMA_NAME} schema."
+else
+    echo "Unable to drop ${SCHEMA_NAME}."
+    exit 1
+fi
+
+echo "move ${PROGRESS_SCHEMA_NAME} into ${SCHEMA_NAME}"
+if mysql -uroot -N -s -r -e "SET SESSION group_concat_max_len = 4294967295; SELECT CONCAT('RENAME TABLE ', GROUP_CONCAT( table_schema,'.',table_name, ' TO ','${SCHEMA_NAME}.',table_name,' '),';') as stmt FROM information_schema.TABLES WHERE table_schema LIKE '${PROGRESS_SCHEMA_NAME}' GROUP BY table_schema" | mysql -uroot ${PROGRESS_SCHEMA_NAME}; then
+    echo "Moved ${PROGRESS_SCHEMA_NAME} to ${SCHEMA_NAME}"
+else
+    echo "Unable to move ${PROGRESS_SCHEMA_NAME} to ${SCHEMA_NAME}. WARNING YOUR DATABASE MAY NO LONGER EXIST, restore from backup ${BACKUP_SCHEMA}"
+    exit 1
+fi
+
+# remove the temporary db.
+mysql -uroot -e "DROP SCHEMA IF EXISTS `${PROGRESS_SCHEMA_NAME}`;";
+echo "---- ALL DONE ----"
+

@@ -1,0 +1,11 @@
+<shared-servers>
+  <shared-server-list id="1" serialization="custom">
+    <unserializable-parents />
+    <java.util.Collection>
+      <default>
+        <size>0</size>
+      </default>
+      <int>10</int>
+    </java.util.Collection>
+  </shared-server-list>
+</shared-servers>

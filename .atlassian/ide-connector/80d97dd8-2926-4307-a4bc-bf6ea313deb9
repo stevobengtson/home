@@ -1,0 +1,14 @@
+<single-server-private-cfg>
+  <private-server-cfg id="1">
+    <server-id id="2">80d97dd8-2926-4307-a4bc-bf6ea313deb9</server-id>
+    <enabled>true</enabled>
+    <username>steven.bengtson@varsitytutors.com</username>
+    <password>a25JbTVFZjBzaG9w</password>
+    <use-http-basic>false</use-http-basic>
+    <useSessionCookies>true</useSessionCookies>
+    <basic-username />
+    <basic-password />
+    <used-default-credentials>false</used-default-credentials>
+    <shared>false</shared>
+  </private-server-cfg>
+</single-server-private-cfg>

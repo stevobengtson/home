@@ -1,0 +1,3 @@
+#!/bin/bash --login
+cd ~/projects/varsitytutors
+rvm gemset use varsitytutors

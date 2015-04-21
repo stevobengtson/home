@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "Clearing the metadata..."
+app/console doctrine:cache:clear-metadata
+
+echo "Reloading test database..."
+app/console doctrine:schema:drop --force --env=test
+app/console doctrine:schema:create --env=test
+app/console doctrine:fixtures:load --no-interaction --env=test
+
+echo "Realoding development database..."
+app/console doctrine:schema:drop --force
+app/console doctrine:schema:create
+app/console doctrine:fixtures:load --no-interaction
