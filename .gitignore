@@ -44,3 +44,4 @@ Sites/
 go/
 pgadmin.log
 v/
+.vim/bundle/*
