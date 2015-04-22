@@ -1,4 +1,4 @@
-
+# brew install bash-git-prompt
 GIT_PROMPT_THEME=Custom
 GIT_PROMPT_FETCH_REMOTE_STATUS=1
 source "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh"
@@ -10,6 +10,11 @@ for file in ~/.{profile,path,bash_prompt,exports,aliases,functions,extra}; do
   [ -r "$file" ] && source "$file"
 done
 unset file
+
+# brew install bash-completion
+if [ -f $(brew --prefix)/etc/bash_completion ]; then
+  . $(brew --prefix)/etc/bash_completion
+fi
 
 # RVM Setup
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
