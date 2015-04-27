@@ -45,3 +45,5 @@ go/
 pgadmin.log
 v/
 .vim/bundle/*
+.docker/
+.pry_history
