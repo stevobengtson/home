@@ -14,6 +14,9 @@ case $1 in
     [[ -n "$3" ]] || TEST_NAME=$3
     ruby -I"lib:test" $TEST_FILE $TEST_NAME
     ;;
+  "update")
+    git fetch --prune && git pull origin develop && bundle install && rake db:migrate
+    ;;
   *)
     echo "Please choose something to do."
     ;;
