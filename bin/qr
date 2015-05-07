@@ -2,10 +2,10 @@
 
 case $1 in
   "server")
-    zeus server Puma -b 0.0.0.0 -p 3000 -e development
+    rails server Puma -b 0.0.0.0 -p 3000 -e development
     ;;
   "console")
-    zeus console
+    rails console
     ;;
   "test")
     TEST_FILE="test/**/*_test.rb"
