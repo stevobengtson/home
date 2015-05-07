@@ -48,3 +48,4 @@ v/
 .docker/
 .pry_history
 .byebug_hist
+.subversion/
