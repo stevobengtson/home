@@ -31,7 +31,8 @@ tmp/
 .npm/
 .passenger/
 .rvm/
-.ssh/
+.ssh/*
+!.ssh/config
 .yjp/
 .RubyMine70/
 .viminfo

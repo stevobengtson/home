@@ -2,7 +2,7 @@
 
 case $1 in
   "server")
-    rails server Puma -b 0.0.0.0 -p 3000 -e development
+    rails server Thin -b 0.0.0.0 -p 3000 -e development
     ;;
   "console")
     rails console

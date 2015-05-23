@@ -1,24 +1,15 @@
 #!/bin/bash
 
-declare -a FAILED
-declare -a PASSED
-NUM_FAILED=0
-NUM_PASSED=0
-for f in `find ./test -iname *_test.rb`
+FOLDER='./test'
+
+if [ $# -gt 0 ]; then
+    FOLDER="$FOLDER/$1"
+fi
+
+for f in `find $FOLDER -iname *_test.rb`
 do
-    echo "Running Test: $f"
-    ruby -I"lib:test" $f
-    if [ $? -eq 0 ]; then
-        PASSED[]=$f
-        NUM_PASSED=$[$NUM_PASSED +1]
-    else
-        FAILED[]=$f
-        NUM_FAILED=$[$NUM_FAILED +1]
-    fi
+    echo -n "Running ruby -Itest $f ..."
+    ruby -Itest $f > /dev/null 2>&1
+    [ $? -eq 0 ] && echo -ne '\033[1K\r✔ ' || echo -ne '\033[1K\r✘ '
+    echo "ruby -Itest $f"
 done
-
-echo "$NUM_PASSED Test files passed."
-echo "$NUM_FAILED Test files failed."
-
-echo ${PASSED}
-echo ${FAILED}
